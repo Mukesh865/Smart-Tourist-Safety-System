@@ -3,7 +3,21 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from .config import settings
 
-engine = create_engine(settings.database_url, connect_args={"check_same_thread": False})
+def _normalize_url(url: str) -> str:
+    # Render hands out postgres:// or postgresql://; SQLAlchemy needs the driver named explicitly (psycopg v3).
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://"):]
+    if url.startswith("postgresql://"):
+        url = "postgresql+psycopg://" + url[len("postgresql://"):]
+    return url
+
+
+_url = _normalize_url(settings.database_url)
+engine = create_engine(
+    _url,
+    connect_args={"check_same_thread": False} if _url.startswith("sqlite") else {},
+    pool_pre_ping=True,
+)
 
 
 def add_missing_columns(eng=None) -> list[str]:

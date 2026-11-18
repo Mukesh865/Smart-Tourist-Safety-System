@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CircleMarker, MapContainer, Polygon, Polyline, TileLayer, Tooltip, useMap } from 'react-leaflet'
 import { Link } from 'react-router-dom'
-import { api, TOKEN_KEY } from '../api'
+import { api, API_ORIGIN, TOKEN_KEY } from '../api'
 import { askNotificationPermission, beep, notificationPermission, notify, setSoundEnabled, soundEnabled } from '../alerting'
 import AlertPanel, { ago, KIND_TONE, nextAction, type AlertRow, type Staff, type TimelineItem, type TrailPoint } from '../components/AlertPanel'
 import AppShell from '../components/AppShell'
@@ -27,8 +27,9 @@ const KINDS = ['panic', 'dropoff', 'inactivity', 'deviation', 'zone_entry', 'zon
 const errText = (e: any, d: string) => (typeof e?.response?.data?.detail === 'string' ? e.response.data.detail : d)
 
 export function wsUrl(token: string) {
-  const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
-  return `${proto}://${window.location.host}/api/ws/alerts?token=${encodeURIComponent(token)}`
+  const base = API_ORIGIN ? new URL(API_ORIGIN) : window.location
+  const proto = base.protocol === 'https:' ? 'wss' : 'ws'
+  return `${proto}://${base.host}/api/ws/alerts?token=${encodeURIComponent(token)}`
 }
 
 function FlyTo({ to }: { to: [number, number] | null }) {
