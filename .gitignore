@@ -1,0 +1,12 @@
+backend/.venv/
+backend/*.db
+backend/.env
+__pycache__/
+.pytest_cache/
+frontend/node_modules/
+frontend/dist/
+backend/keys/
+backend/models/
+frontend/test-results/
+frontend/playwright-report/
+frontend/e2e/screenshots/

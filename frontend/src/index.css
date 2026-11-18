@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens as RGB triplets so Tailwind can apply opacity (bg-brand/10). Light is the default;
+   .dark overrides them. Contrast of text-on-surface pairs is >= 4.5:1 in both themes. */
+:root {
+  --base: 241 245 245;
+  --sunken: 232 238 240;
+  --surface: 255 255 255;
+  --ink: 15 23 42;
+  --muted: 71 85 105;
+  --line: 214 223 228;
+  --brand: 15 118 110;        /* teal-700: buttons, links (white text on it is 5.5:1) */
+  --brand-ink: 17 94 89;      /* teal-800: text/links on light surfaces and on brand/15 tints (>= 6:1) */
+  --danger: 185 28 28;
+  --warn: 146 64 14;          /* orange-800: badge text on warn/15 tints >= 4.5:1 */
+  --ok: 22 101 52;            /* green-800: badge text on ok/15 tints stays >= 4.5:1 */
+  /* chart series (categorical slots 1-3, validated: CVD dE >= 9, normal-vision dE >= 26 in both modes) */
+  --series-1: 42 120 214;     /* movement alerts */
+  --series-2: 235 104 52;     /* panic alerts */
+  --series-3: 27 175 122;     /* zone alerts (below 3:1 on light surfaces: legend + data table are always provided) */
+  color-scheme: light;
+}
+.dark {
+  --base: 9 16 20;
+  --sunken: 14 23 28;
+  --surface: 19 30 36;
+  --ink: 226 232 240;
+  --muted: 148 163 184;
+  --line: 40 56 64;
+  --brand: 20 184 166;        /* teal-500 */
+  --brand-ink: 94 234 212;    /* teal-300 for text/links on dark surfaces */
+  --danger: 248 113 113;
+  --warn: 251 191 36;
+  --ok: 74 222 128;
+  --series-1: 57 135 229;
+  --series-2: 217 89 38;
+  --series-3: 25 158 112;
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-canvas text-ink antialiased; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+:focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-canvas; }
+
+@layer components {
+  .btn { @apply inline-flex min-h-[2.5rem] items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .dark .btn { @apply text-slate-950; }
+  .input { @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted/70 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40; }
+  .card { @apply rounded-xl border border-line bg-surface shadow-sm; }
+}
+
+/* Leaflet adapts to the theme: dim the tiles in dark mode, keep controls readable */
+.dark .leaflet-tile-pane { filter: brightness(.7) contrast(1.1) saturate(.8); }
+.dark .leaflet-container { background: rgb(var(--sunken)); }
+.leaflet-container { font-family: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Printing the ID card: hide everything except the card */
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; left: 50%; top: 2rem; transform: translateX(-50%); box-shadow: none; }
+}
